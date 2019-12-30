@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_piant/BgButtonBubble.dart';
 
 class QNavButton extends StatefulWidget{
   QNavTab tabView;
@@ -16,25 +19,40 @@ class QNavButton extends StatefulWidget{
 
 }
 
-class QNavButtonState extends State<QNavButton> with SingleTickerProviderStateMixin<QNavButton> {
-  double circleExtend=30;
-  double maxOffset=15;
+class QNavButtonState extends State<QNavButton> with TickerProviderStateMixin<QNavButton> {
+  double circleExtend=38;
+  double maxOffset=12;
   AnimationController _animationController;
+  AnimationController _animationWidthController;
   CurvedAnimation _animation;
+  CurvedAnimation _animationCircleWith;
   @override
   void initState() {
     // TODO: implement initState
     _animationController=AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 800),
+      duration: Duration(milliseconds: 500),
+    );
+    _animationWidthController=AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
     );
 
+    _animationCircleWith=CurvedAnimation(
+      parent:  Tween<double>(begin: 0.8, end: 1.0).animate(_animationWidthController),curve: Curves.linear
+    );
 
-    _animation= CurvedAnimation(parent: Tween<double>(begin: 0.6, end: 1.0).animate(_animationController),curve:  Curves.bounceInOut)..addListener((){
+    _animation= CurvedAnimation(parent: Tween<double>(begin: 0, end: 1.0).animate(_animationController),curve:  Curves.bounceOut);
+
+    Listenable.merge([_animationCircleWith,_animation]).addListener((){
       setState(() {
       });
     });
-
+    _animationWidthController.addStatusListener((status){
+      if(status==AnimationStatus.completed){
+      _animationController.forward();
+      };
+    });
 
 
     super.initState();
@@ -48,41 +66,33 @@ class QNavButtonState extends State<QNavButton> with SingleTickerProviderStateMi
     return Expanded(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        child: Container(
+        child:Stack(
           alignment: Alignment.center,
-          height: widget.navHeight,
-          child: Stack(
-             alignment: Alignment.center,
-            children: <Widget>[
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  SizedBox(width: MediaQuery.of(context).size.width,),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 16),
-                    width: circleExtend,
-                    height:circleExtend,
-                    transform: Matrix4.translationValues(0, widget.selected? -(maxOffset*_animation.value):0, 0),
+          children: <Widget>[
+            SizedBox(width:MediaQuery.of(context).size.width ,height: widget.navHeight,),
+            Positioned(
+              child:Container(
+                transform: Matrix4.translationValues(0, widget.selected? -(maxOffset*_animation.value):0, 0),
+                child: CustomPaint(
+                  painter:widget.selected?  BgButtonBubble(_animation.value):null,
+                  child: Container(
+                    width: widget.selected? circleExtend*_animationCircleWith.value:null,
+                    height:widget.selected? circleExtend*_animationCircleWith.value:null,
                     alignment: Alignment.center,
-                    decoration: ShapeDecoration(
-                        gradient:widget.selected? LinearGradient(
-                            colors: [Color(0xFFF1585A), Colors.green[300]]
-                        ):null,
-                        shape: CircleBorder()
-                    ),
                     child: Container(
                       constraints:BoxConstraints.tight(Size( 25,25)),
                       child: widget.tabView.tabView,
                     ),
                   ),
-                ],
+                ),
               ),
-              Positioned(
-                child:Text(widget.tabView.tabText,style: TextStyle(color: widget.selected? Colors.red:Color(0xFF333333)),),
-                bottom: 0,
-              )
-            ],
-          ),
+              bottom: SizedBox(child: Text("")).height,
+            ),
+            Positioned(
+              child:Text(widget.tabView.tabText,style: TextStyle(color: widget.selected? Colors.red:Color(0xFF333333),),),
+              bottom: 0,
+                  )
+          ],
         ),
         onTap: ()=>widget.onPress(),
       ),
@@ -105,10 +115,11 @@ class QNavButtonState extends State<QNavButton> with SingleTickerProviderStateMi
 
   void _startAnimation() {
 
-    if(widget.selected&&!_animationController.isAnimating){
-      _animationController.forward();
+    if(widget.selected&&!_animationWidthController.isAnimating){
+      _animationWidthController.forward();
     }else{
       _animationController.reverse();
+      _animationWidthController.reverse();
     }
   }
 }

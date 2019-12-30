@@ -76,7 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Container(
         child: CustomPaint(
-          size: Size(MediaQuery.of(context).size.width,MediaQuery.of(context).size.height),
+          child:Container(
+            alignment: Alignment.center,
+            height: 100,
+            width: 100,
+            child: Text("1111"),
+          ),
           painter: new TestPaint(),
         ),
       ),
