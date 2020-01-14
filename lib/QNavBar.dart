@@ -20,6 +20,7 @@ class QNavBarState extends  State<QNavBar>{
     var viewSize=MediaQuery.of(context).size;
     return Container(
       decoration: BoxDecoration(
+        color: Colors.white,
         border: Border(top:BorderSide(width: 0.4,color: Colors.red))
       ),
       width: viewSize.width,

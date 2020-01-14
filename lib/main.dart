@@ -75,15 +75,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Container(
-        child: CustomPaint(
-          child:Container(
-            alignment: Alignment.center,
-            height: 100,
-            width: 100,
-            child: Text("1111"),
-          ),
-          painter: new TestPaint(),
-        ),
+        color: Colors.red,
+
       ),
       bottomNavigationBar: QNavBar(navTabs: [
         QNavTab( tabText: "主页",tabView: Image.asset("assets/ic_test.png",width: 1000,)),

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class BgButtonBubble extends CustomPainter{
   Paint mPaint;
   double transformOffest;
-  BgButtonBubble(this.transformOffest){
+  double circleScaleValue;
+  BgButtonBubble({this.transformOffest,this.circleScaleValue}){
 
     if(mPaint==null){
       mPaint =Paint()
@@ -16,20 +17,34 @@ class BgButtonBubble extends CustomPainter{
   @override
   void paint(Canvas canvas, Size size) {
     // TODO: implement paint
-    var center_offest=Offset(size.width/2,size.height/2);
-    var radius= size.width/2;
+    var centerOffset=Offset(size.width /2,size.height/2);
+    var radius= ((size.height/2)*0.78) *circleScaleValue;
+
+    mPaint.shader=null;
+    mPaint.color=Colors.white;
+    canvas.drawCircle(centerOffset, radius+radius*0.3, mPaint);
+
+
     if(mPaint.shader==null){
-      mPaint.shader=new LinearGradient(colors:[Colors.blue,Colors.green]).createShader(Rect.fromCenter(center: center_offest,width: size.width,height:size.height));
+      mPaint.shader=new LinearGradient(colors:[Colors.blue,Colors.green]).createShader(Rect.fromCenter(center: centerOffset,width: size.width,height:size.height));
     }
-     canvas.drawCircle(center_offest, radius, mPaint);
-    if(transformOffest<0.5){
-      Path path =Path()
-        ..moveTo(size.width*0.3, size.height*0.5)
-        ..quadraticBezierTo(center_offest.dx, size.height-((0.7-transformOffest)*(size.height*0.5)), size.width-(size.width*0.3), size.height*0.5);
+    canvas.drawCircle(centerOffset, radius, mPaint);
 
-      canvas.drawPath(path, mPaint);
 
-    }
+    print("transformOffest:${transformOffest.toString()}");
+   if(transformOffest>0){
+     var tranheight=transformOffest;
+     if(tranheight==1){
+       tranheight=0;
+     }
+     Path path =Path()
+       ..moveTo(centerOffset.dx-radius*0.93, centerOffset.dy+radius*0.4)
+       ..quadraticBezierTo(centerOffset.dx, size.height+(radius*0.6)*tranheight, centerOffset.dx+radius*0.93, centerOffset.dy+radius*0.4);
+     canvas.drawPath(path, mPaint);
+
+   }
+
+
 
 
   }

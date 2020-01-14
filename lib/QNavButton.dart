@@ -31,15 +31,15 @@ class QNavButtonState extends State<QNavButton> with TickerProviderStateMixin<QN
     // TODO: implement initState
     _animationController=AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 500),
+      duration: Duration(milliseconds: 350),
     );
     _animationWidthController=AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 300),
+      duration: Duration(milliseconds: 250),
     );
 
     _animationCircleWith=CurvedAnimation(
-      parent:  Tween<double>(begin: 0.8, end: 1.0).animate(_animationWidthController),curve: Curves.linear
+      parent:  Tween<double>(begin: 0, end: 1.0).animate(_animationWidthController),curve: Curves.linear
     );
 
     _animation= CurvedAnimation(parent: Tween<double>(begin: 0, end: 1.0).animate(_animationController),curve:  Curves.bounceOut);
@@ -61,7 +61,7 @@ class QNavButtonState extends State<QNavButton> with TickerProviderStateMixin<QN
   @override
   Widget build(BuildContext context) {
 
-
+     final  width=MediaQuery.of(context).size.width;
     // TODO: implement build
     return Expanded(
       child: GestureDetector(
@@ -69,15 +69,14 @@ class QNavButtonState extends State<QNavButton> with TickerProviderStateMixin<QN
         child:Stack(
           alignment: Alignment.center,
           children: <Widget>[
-            SizedBox(width:MediaQuery.of(context).size.width ,height: widget.navHeight,),
+            SizedBox(width:width,height: widget.navHeight,),
             Positioned(
               child:Container(
                 transform: Matrix4.translationValues(0, widget.selected? -(maxOffset*_animation.value):0, 0),
                 child: CustomPaint(
-                  painter:widget.selected?  BgButtonBubble(_animation.value):null,
+                  painter:widget.selected?  BgButtonBubble(transformOffest: _animation.value,circleScaleValue: _animationCircleWith.value):null,
                   child: Container(
-                    width: widget.selected? circleExtend*_animationCircleWith.value:null,
-                    height:widget.selected? circleExtend*_animationCircleWith.value:null,
+                    margin: widget.selected? null: EdgeInsets.only(bottom: 10),
                     alignment: Alignment.center,
                     child: Container(
                       constraints:BoxConstraints.tight(Size( 25,25)),
@@ -86,8 +85,12 @@ class QNavButtonState extends State<QNavButton> with TickerProviderStateMixin<QN
                   ),
                 ),
               ),
-              bottom: SizedBox(child: Text("")).height,
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
             ),
+
             Positioned(
               child:Text(widget.tabView.tabText,style: TextStyle(color: widget.selected? Colors.red:Color(0xFF333333),),),
               bottom: 0,
